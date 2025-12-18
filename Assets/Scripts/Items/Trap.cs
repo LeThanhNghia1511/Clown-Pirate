@@ -3,42 +3,35 @@
 public class Trap : MonoBehaviour
 {
     [Header("Damage")]
-    [SerializeField] private float _spikeDamage = 2.5f;
     [SerializeField] private float _enterDamage = 0.5f;
-
-    private Health _playerHealth = null;
-    //[SerializeField] private GameObject _player;
+    //[SerializeField] private float _spikeDamage = 2.5f;
     private Vector2 _hitDirection;
-
     private void OnTriggerEnter2D(Collider2D collision)
     {
         //Calculate();
 
         if (collision.gameObject.CompareTag("Player"))
         {
-            _playerHealth = collision.gameObject.GetComponent<Health>();
             Debug.Log("Deal enter damage");
-            _playerHealth.TakeDamage(_enterDamage, _hitDirection);
-        }
-    }
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.gameObject.CompareTag("Player"))
-        {
-            _playerHealth = null;
+            if (PlayerHealth.instance != null)
+            {
+                PlayerHealth.instance.TakeDamage(_enterDamage, _hitDirection);
+            }
         }
     }
 
-    public void DealDamageToPlayer()
-    {
-        //Calculate(); // Calculate the diretion to create the knockback effect
-        if (_playerHealth != null)
-        {
-            Debug.Log("Deal spike damage");
-            _playerHealth.TakeDamage(_spikeDamage, _hitDirection);
-        }
-        Debug.Log("null health");
-    }    
+    //private void OnTriggerStay2D(Collider2D collision)
+    //{
+    //    if (collision.gameObject.CompareTag("Player"))
+    //    {
+    //        _playerHealth = collision.gameObject.GetComponent<PlayerHealth>();
+    //        Debug.Log("Deal spike damage");
+    //        if (_playerHealth != null)
+    //        {
+    //            _playerHealth.TakeDamage(_spikeDamage, _hitDirection);
+    //        }
+    //    }
+    //} 
 
     //private void Calculate()
     //{

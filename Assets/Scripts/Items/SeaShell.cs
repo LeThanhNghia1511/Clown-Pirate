@@ -20,13 +20,13 @@ public class SeaShell : BaseEnemy
     //{
     //    if (collision.gameObject.CompareTag("Player"))
     //    {
-    //        Health _playerHealth = collision.GetComponent<Health>();
+    //        PlayerHealth _playerHealth = collision.GetComponent<PlayerHealth>();
     //        _animator.SetTrigger("Bite");
     //        //_playerHealth.TakeDamage(_damage, _hitDirection);
     //    }
     //}
 
-    //public override void DeathHandle()
+    //public override void HandleDeath()
     //{
     //    GameObject debrisObject = Instantiate(_destroyedPrefab, _position.position, Quaternion.identity);
     //    Destroy(this.gameObject);

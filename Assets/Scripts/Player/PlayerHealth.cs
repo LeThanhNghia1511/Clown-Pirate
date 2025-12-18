@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
-
-public class Health : MonoBehaviour
+public class PlayerHealth : MonoBehaviour
 {
     [Header("Health")]
     [SerializeField] private float _maxHealth = 10f;
@@ -11,7 +10,7 @@ public class Health : MonoBehaviour
     // Animator for some effects
     private Animator _animator;
 
-    public static Health instance;
+    public static PlayerHealth instance;
     private void Awake()
     {
         if (instance != null && instance != this)
@@ -41,6 +40,7 @@ public class Health : MonoBehaviour
             if (_animator != null)
             {
                 _animator.SetTrigger("Hit");
+                //Knockback.instance.DoKnockback();
                 UIManager.instance.UpdateHPBar(_currentHealth, _maxHealth);
             }
 
@@ -48,19 +48,18 @@ public class Health : MonoBehaviour
             PlayerController player = GetComponent<PlayerController>();
             if (player != null)
             {
-                player.ApplyKnockback(hitDirection); // Gọi hàm đẩy lùi trong Controller
+                //player.ApplyKnockback(hitDirection); // Gọi hàm đẩy lùi trong Controller
             }
 
-            //3.Kích hoạt Camera Shake
-            CameraManager.instance.ShakeCamera(10f, 10f);
+            CameraManager.instance.ShakeCamera(3f, 0.3f);
         }
         if (_currentHealth <= 0)
         {
-            DeathHandle();
+            HandleDeath();
         }
     }
 
-    private void DeathHandle()
+    private void HandleDeath()
     {
         _currentLive--;
         if (_currentLive >= 0)
@@ -77,12 +76,22 @@ public class Health : MonoBehaviour
             PlayerController.instance.LockControlsOnDeath();
             _animator.SetBool("isDead", true);
             _animator.SetTrigger("DeadHit");
-            GameManager.instance.LoseGame();
         }
     }
 
-    private void Kill()
+    public void Animation_Kill()
     {
         Destroy(this.gameObject);
+        GameManager.instance.LoseGame();
+    }
+
+    public void Heal(float healAmount)
+    {
+        _currentHealth += healAmount;
+        if (_currentHealth > _maxHealth)
+        {
+            _currentHealth = _maxHealth;
+        }
+        UIManager.instance.UpdateHPBar(_currentHealth, _maxHealth);
     }
 }

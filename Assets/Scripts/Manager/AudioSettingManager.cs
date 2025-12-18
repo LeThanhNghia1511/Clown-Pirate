@@ -8,7 +8,13 @@ public class AudioSettingsManager : MonoBehaviour
     [SerializeField] private Slider _audioSlider;
     private bool _isBGMOn = true;
     private bool _isSFXOn = true;
-    public float currentAudioValue;
+    private float _currentAudioValue;
+
+    // Icon for toggle button
+    [SerializeField] private Image bgmIcon;
+    [SerializeField] private Image sfxIcon;
+    [SerializeField] private Sprite iconOn;
+    [SerializeField] private Sprite iconOff;
 
     public static AudioSettingsManager instance;
     private void Awake()
@@ -31,11 +37,24 @@ public class AudioSettingsManager : MonoBehaviour
     public void SetAudioVolume()
     {
         float audioValue = _audioSlider.value;
-        currentAudioValue = ConvertLinearToDB(audioValue);
-        audioMixer.SetFloat("BGMVolume", currentAudioValue);
-        audioMixer.SetFloat("SFXVolume", currentAudioValue);
+        _currentAudioValue = ConvertLinearToDB(audioValue);
+        audioMixer.SetFloat("BGMVolume", _currentAudioValue);
+        audioMixer.SetFloat("SFXVolume", _currentAudioValue);
         PlayerPrefs.SetFloat("BGMVolume", audioValue); // Prefs phai dung gia tri tuyen tinh
         PlayerPrefs.SetFloat("SFXVolume", audioValue);
+
+        // Update states
+        if (_currentAudioValue <= -80f)
+        {
+            _isBGMOn = false;
+            _isSFXOn = false;
+        }
+        else
+        {             
+            _isBGMOn = true;
+            _isSFXOn = true;
+        }
+        UpdateMixerAndIcon();
     }
 
     private float ConvertLinearToDB(float linearVolume)
@@ -47,7 +66,7 @@ public class AudioSettingsManager : MonoBehaviour
         return Mathf.Log10(linearVolume) * 20;
     }
 
-    public void OnOffBGM()
+    public void ToggleBGM()
     {
         if (_isBGMOn)
         {
@@ -56,12 +75,13 @@ public class AudioSettingsManager : MonoBehaviour
         }
         else
         {
-            audioMixer.SetFloat("BGMVolume", currentAudioValue);
+            audioMixer.SetFloat("BGMVolume", _currentAudioValue);
             _isBGMOn = true;
         }
+        UpdateMixerAndIcon();
     }
 
-    public void OnOffSFX()
+    public void ToggleSFX()
     {
         if (_isSFXOn)
         {
@@ -71,9 +91,10 @@ public class AudioSettingsManager : MonoBehaviour
         }
         else
         {
-            audioMixer.SetFloat("SFXVolume", currentAudioValue);
+            audioMixer.SetFloat("SFXVolume", _currentAudioValue);
             _isSFXOn = true;
         }
+        UpdateMixerAndIcon();
     }
 
     private void LoadSlider()
@@ -83,4 +104,15 @@ public class AudioSettingsManager : MonoBehaviour
         SetAudioVolume();
     }
 
+    private void UpdateMixerAndIcon()
+    {
+        if (bgmIcon != null)
+        {
+            bgmIcon.sprite = _isBGMOn ? iconOn : iconOff;
+        }
+        if (sfxIcon != null)
+        {
+            sfxIcon.sprite = _isSFXOn ? iconOn : iconOff;
+        }
+    }
 }

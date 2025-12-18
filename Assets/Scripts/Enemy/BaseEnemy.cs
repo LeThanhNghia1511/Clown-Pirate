@@ -14,13 +14,15 @@ public class BaseEnemy : MonoBehaviour
 
     [Header("AI Setting")]
     [SerializeField] protected float _moveSpeed = 5f;
-    [SerializeField] protected float _moveRange = 10f; // From the left to the right 
-    [SerializeField] protected float _jummpForce;
+    [SerializeField] protected float _moveRange = 10f; // From the left to the right
+    private bool _canMove = true;
+    [SerializeField] protected float _jumpForce;
     [SerializeField] protected float _groundCheckDistance = 1.2f; // The distance from the pivot to the ground
     [SerializeField] protected float _distanceToPlayer = 2f;
     [SerializeField] protected float _raycastLength = 2f; // The distance from enemy to the wall
-    [SerializeField] protected float _damage = 5f;
-    
+
+    [Header("Score")]
+    [SerializeField] protected int _scoreValue = 20;
 
     [Header("Layers")]
     [SerializeField] protected LayerMask _wallLayer;
@@ -31,8 +33,9 @@ public class BaseEnemy : MonoBehaviour
     protected Rigidbody2D _rb;
     protected Vector3 _startPosition;
     protected bool _isFacingRight;
-    
-    
+    protected bool _isAttacking = false;
+
+
     private void Start()
     {
         _animator = this.GetComponent<Animator>();
@@ -40,6 +43,7 @@ public class BaseEnemy : MonoBehaviour
         _startPosition = this.transform.position;
         _currentHealth = _maxHealth;
         _currentLive = _maxLive;
+        _canMove = true;
         if (_animator != null)
         {
             _animator.SetBool("isDead", false);
@@ -54,38 +58,41 @@ public class BaseEnemy : MonoBehaviour
         CheckForPlayer();
     }
 
-    public void HandleMovement()
+    private void HandleMovement()
     {
         _animator.SetBool("isRunning", true);
         float currentX = this.transform.position.x;
         float targetVelocityX = _isFacingRight ? _moveSpeed : -_moveSpeed;
 
-        if (_isFacingRight && currentX >= _startPosition.x + (_moveRange / 2f))
+        if (_canMove)
         {
-            Flip();
+            if (_isFacingRight && currentX >= _startPosition.x + (_moveRange / 2f))
+            {
+                Flip();
+            }
+            else if (!_isFacingRight && currentX <= _startPosition.x - (_moveRange / 2f))
+            {
+                Flip();
+            }
+            _rb.linearVelocity = new Vector2(targetVelocityX, _rb.linearVelocity.y);
         }
-        else if (!_isFacingRight && currentX <= _startPosition.x - (_moveRange / 2f))
-        {
-            Flip();
-        }
-        _rb.linearVelocity = new Vector2(targetVelocityX, _rb.linearVelocity.y);
     }
 
-    public void Flip()
+    private void Flip()
     {
         _rb.transform.localScale = new Vector3(_rb.transform.localScale.x * -1, 1f, 1f);
         _isFacingRight = !_isFacingRight;
     }
 
     #region Jump
-    public void HandleJump()
+    private void HandleJump()
     {
         Debug.Log("Enemy's Jumping");
         // Jump
-        _rb.AddForce(Vector2.up * _jummpForce);
+        _rb.AddForce(Vector2.up * _jumpForce);
     }
 
-    public void HandleAutoJump() // Jump when hit the wall
+    private void HandleAutoJump() // Jump when hit the wall
     {
         Vector2 castStartPos = this.transform.position - Vector3.up * 0.5f;
         Vector2 castDir = _isFacingRight ? Vector2.right : Vector2.left;
@@ -96,7 +103,7 @@ public class BaseEnemy : MonoBehaviour
                                         _raycastLength, // Distance
                                         _wallLayer); // Layer
 
-        if (_hitTheWall.collider != null && CheckGround())
+        if (_hitTheWall.collider != null && CheckGround() && _canMove)
         {
             HandleJump();
         }
@@ -104,14 +111,14 @@ public class BaseEnemy : MonoBehaviour
         // Show raycast
         //Color rayColor = _hitTheWall.collider != null ? Color.red : Color.green; // The color turn red when hit the wall
         //Debug.DrawRay(
-        //    castStartPos,           
-        //    castDir * _raycastLength,            
-        //    rayColor,                             
-        //    Time.fixedDeltaTime                     
+        //    castStartPos,
+        //    castDir * _raycastLength,
+        //    rayColor,
+        //    Time.fixedDeltaTime
         //);
     }
 
-    public bool CheckGround()
+    private bool CheckGround()
     {
         Vector2 castStartPos = this.transform.position - Vector3.up * 0.5f;
         RaycastHit2D _hitGround = Physics2D.Raycast(
@@ -120,7 +127,7 @@ public class BaseEnemy : MonoBehaviour
                                                     _groundCheckDistance,
                                                     _groundLayer);
         // Show raycast
-        //Color rayColor = _hitGround.collider != null ? Color.blue : Color.cyan; // The color turn red when hit the wall
+        //Color rayColor = _hitGround.collider != null ? Color.blue : Color.red; // The color turn blue when hit the wall
         //Debug.DrawRay(
         //    castStartPos,
         //    Vector2.down * _groundCheckDistance,
@@ -137,8 +144,7 @@ public class BaseEnemy : MonoBehaviour
     }
     #endregion
 
-        bool isAttacking = false;
-    public void CheckForPlayer()
+    private void CheckForPlayer()
     {
         Vector2 castStartPos = this.transform.position;
         Vector2 castDir = _isFacingRight ? Vector2.right : Vector2.left;
@@ -149,15 +155,15 @@ public class BaseEnemy : MonoBehaviour
                                         _distanceToPlayer, // Distance fom enemy to player
                                         _playerLayer); // Layer
 
-        if (_hitPlayer.collider != null && !isAttacking)
+        if (_hitPlayer.collider != null && !_isAttacking)
         {
             Debug.Log("Attack Player");
             Attack();
-            isAttacking = true;
+            _isAttacking = true;
         }
         if (_hitPlayer.collider == null)
         {
-            isAttacking = false;
+            _isAttacking = false;
         }
 
         //    // Show raycast
@@ -170,40 +176,40 @@ public class BaseEnemy : MonoBehaviour
         //);
     }
 
-    public void Attack()
+    private void Attack()
     {
         _animator.SetTrigger("Attack");
-        Health.instance.TakeDamage(_damage, Vector2.right);
     }
 
     public virtual void TakeDamage(float damage)
     {
         _currentHealth -= damage;
-        Debug.Log("Enemy Hurting");
+        _animator.SetTrigger("Hit");
         if (_currentHealth <= 0)
         {
             HandleDeath();
         }
     }
 
-    public void HandleDeath()
+    private void HandleDeath()
     {
         _currentLive--;
         if (_currentLive <= 0)
         {
-            Kill();
+            _canMove = false;
+            _animator.SetTrigger("DeadHit");
+            _animator.SetBool("isDead", true);
         }
     }
 
-    public void Kill()
+    public void Animation_Kill()
     {
         Debug.Log("Kill");
-        Destroy(gameObject);
+        LevelManager.instance.AddPoint(_scoreValue);
+        Destroy(this.gameObject);
     }
 
-
-
-    public void UpdateAnimationParameters()
+    private void UpdateAnimationParameters()
     {
         float velocityY = _rb.linearVelocityY;
         if (velocityY > 0.1f)

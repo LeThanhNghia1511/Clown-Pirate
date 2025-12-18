@@ -19,7 +19,7 @@ TagManager:
   - Enemy
   - Player
   - Trap
-  - 
+  - Attack Collider
   - 
   - 
   - 
@@ -53,6 +53,9 @@ TagManager:
     locked: 0
   - name: Player
     uniqueID: 1529523043
+    locked: 0
+  - name: Item
+    uniqueID: 2831921723
     locked: 0
   - name: Foreground
     uniqueID: 813311903

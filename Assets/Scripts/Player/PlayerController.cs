@@ -7,9 +7,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Rigidbody2D _rbPlayer;
     [SerializeField] private float _moveSpeed = 5f;
     private float _moveX;
-    [SerializeField] private float _jumpForce = 5f;
+    [SerializeField] public float jumpForce = 5f;
     [SerializeField] private Vector2 _boxSize = new Vector2(0.8f, 0.1f); // The size of the box
     [SerializeField] private LayerMask _groundLayer;
+    [SerializeField] private int _maxJump = 2;
+    private int _jumpCount = 0;
 
     private bool _canMove = true; // Chỉ cho phép di chuyển khi TRUE
     [SerializeField] private float _knockbackPower = 50f;
@@ -51,6 +53,10 @@ public class PlayerController : MonoBehaviour
         {
             return;
         }
+        if (CheckGround() && _rbPlayer.linearVelocity.y <= 0.1f) // Khi cham dat va dang roi
+        {
+            _jumpCount = 0;
+        }
         HandleMove();
         HandleJump();
         HandleFall();
@@ -63,18 +69,8 @@ public class PlayerController : MonoBehaviour
         // Normal attack
         if (Input.GetMouseButtonDown(0) && _canMove && _hasSword)
         {
-            //    if (_canMove)
-            //    {
-            //        Debug.Log("can move");
-            //    }
-            //    if (_hasSword)
-            //    {
-            //        Debug.Log("has sword");
-            //    }
-            // Khi bấm nút, không tăng ComboStage ngay lập tức
-            //Debug.Log(_currentComboStage);
+            CameraManager.instance.ShakeCamera(2f, 0.3f);
             // Trường hợp 1: Bắt đầu Combo 1
-            _swordCollider.SetActive(true);
             if (_currentComboStage == 0)
             {
                 _currentComboStage = 1;
@@ -125,7 +121,6 @@ public class PlayerController : MonoBehaviour
     {
         if (_currentComboStage != 0)
         {
-            _swordCollider.SetActive(false);
             _currentComboStage = 0;
 
             // ⭐ Báo hiệu cho Animator rằng combo đã kết thúc
@@ -206,7 +201,7 @@ public class PlayerController : MonoBehaviour
     //    if (Input.GetKeyDown(KeyCode.Space) && CheckGround())
     //    {
     //        Debug.Log("Jumping");
-    //        _rbPlayer.linearVelocity = new Vector2(this.transform.position.x, _jumpForce);
+    //        _rbPlayer.linearVelocity = new Vector2(this.transform.position.x, jumpForce);
     //    }
     //}
 
@@ -236,12 +231,19 @@ public class PlayerController : MonoBehaviour
     //------ CHECKGROUND USING BOXCAST (use a box (like retangle or circle instead of a line) ------
     private void HandleJump()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && CheckGround())
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            Debug.Log("Jumping");
-            _rbPlayer.AddForce(Vector2.up*_jumpForce);
-            AudioManager.instance.PlayJumpSFX();
-            _animator.SetBool("isJumping", true);
+            if (CheckGround() || _jumpCount < _maxJump)
+            {
+                _rbPlayer.linearVelocity = new Vector2(_rbPlayer.linearVelocity.x, 0);
+                _rbPlayer.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+
+                // Audio và Anim
+                AudioManager.instance.PlayJumpSFX();
+                _animator.SetBool("isJumping", true);
+                _jumpCount++;
+                Debug.Log(_jumpCount);
+            }
         }
     }
 
@@ -249,7 +251,7 @@ public class PlayerController : MonoBehaviour
     {
         if (!CheckGround() && _rbPlayer.linearVelocity.y < 0) // Khong cham dat va velocity dang giam (Fall)
         {
-            Debug.Log("Falling");
+            //Debug.Log("Falling");
             _animator.SetBool("isJumping", false);
             _animator.SetBool("isFalling", true);
         }
@@ -307,6 +309,7 @@ public class PlayerController : MonoBehaviour
     {
         // Khóa di chuyển vĩnh viễn
         _canMove = false;
+        _rbPlayer.linearVelocity = Vector2.zero;
 
         // Tùy chọn: Tắt input processing nếu cần thêm (dù _canMove đã làm việc này)
         enabled = false;

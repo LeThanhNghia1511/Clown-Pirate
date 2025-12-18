@@ -126,7 +126,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _speed: 25
-  _damage: 10
+  _damage: 15
+  _lifetime: 15
   _wallLayer:
     serializedVersion: 2
     m_Bits: 64
@@ -164,7 +165,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.13257527, y: -0.060287118}
+  m_Offset: {x: 0.04000002, y: -0.030541062}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -174,7 +175,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.88379717, y: 0.9001343}
+  m_Size: {x: 1.19, y: 1.1943657}
   m_EdgeRadius: 0
 --- !u!50 &3516351434439598106
 Rigidbody2D:

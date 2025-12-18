@@ -1,10 +1,11 @@
-﻿using Unity.Jobs;
-using Unity.VisualScripting;
+﻿using System.Collections;
+using Unity.Cinemachine;
 using UnityEngine;
-using System.Collections;
 
 public class CameraManager : MonoBehaviour
 {
+    [SerializeField] private CinemachineCamera _cinemachineCamera;
+    private float _shakeTimer;
     // Singleton for camera
     public static CameraManager instance { get; private set; }
     private void Awake()
@@ -17,30 +18,28 @@ public class CameraManager : MonoBehaviour
         {
             instance = this;
         }
+        _shakeTimer = 0;
+        _cinemachineCamera = GetComponent<CinemachineCamera>();
     }
 
-    public void ShakeCamera(float duration, float magnitude)
+    public void ShakeCamera(float intensity, float time)
     {
-        StartCoroutine(ShakeRoutine(duration, magnitude));
+        CinemachineBasicMultiChannelPerlin cinemachineBasicMultiChannelPerlin = _cinemachineCamera.GetComponent<CinemachineBasicMultiChannelPerlin>();
+        cinemachineBasicMultiChannelPerlin.AmplitudeGain = intensity;
+        _shakeTimer = time;
     }
 
-    private IEnumerator ShakeRoutine(float duration, float magnitude)
+    private void Update()
     {
-        Vector3 originalPosition = transform.localPosition;
-        float elapsed = 0f;
-
-        while (elapsed < duration)
+        if (_shakeTimer > 0f)
         {
-            // Tạo một vector rung ngẫu nhiên (chỉ rung nhẹ trục X và Y)
-            float x = Random.Range(-1f, 1f) * magnitude;
-            float y = Random.Range(-1f, 1f) * magnitude;
-
-            transform.localPosition = originalPosition + new Vector3(x, y, 0);
-
-            elapsed += Time.deltaTime;
-            yield return null;
+            _shakeTimer -= Time.deltaTime;
+            if (_shakeTimer <= 0f)
+            {
+                // Time over
+                CinemachineBasicMultiChannelPerlin cinemachineBasicMultiChannelPerlin = _cinemachineCamera.GetComponent<CinemachineBasicMultiChannelPerlin>();
+                cinemachineBasicMultiChannelPerlin.AmplitudeGain = 0f;
+            }
         }
-
-        transform.localPosition = originalPosition; // Đặt lại vị trí ban đầu
     }
 }

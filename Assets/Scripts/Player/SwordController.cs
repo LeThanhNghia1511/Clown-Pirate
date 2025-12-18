@@ -4,7 +4,8 @@ using System.Collections;
 public class SwordController : MonoBehaviour
 {
     [SerializeField] private float _speed = 15f;
-    //[SerializeField] private float _damage = 10f;
+    [SerializeField] private float _damage = 10f;
+    [SerializeField] private float _lifetime = 5f;
     [SerializeField] private LayerMask _wallLayer; // Layer của tường/địa hình
 
     private Vector2 _direction;
@@ -35,14 +36,15 @@ public class SwordController : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         Debug.Log("Signal");
-        // 1. Va chạm với Tường (Ghim Kiếm)
+        // Va chạm với Tường (Ghim Kiếm)
         if (((1 << other.gameObject.layer) & _wallLayer) != 0)
         {
             Debug.Log("Signal Wall");
-            StickToWall(other.transform);
+            Vector2 hitPoint = other.ClosestPoint(transform.position);
+            StickToWall(other.transform, hitPoint);
         }
 
-        // 2. Va chạm với Player (Nhặt Kiếm)
+        // Va chạm với Player (Nhặt Kiếm)
         if (other.CompareTag("Player") && _isStuck)
         {
             Debug.Log("Signal Player");
@@ -50,35 +52,38 @@ public class SwordController : MonoBehaviour
             PickUpSword();
         }
 
-
-        // va chạm với enemy
+        // Va chạm với enemy
         if (other.CompareTag("Enemy"))
         {
-            //Debug.Log("cccc");
-            //SeaShell enemy = other.GetComponent<SeaShell>();
-            //if (enemy != null)
-            //{
-            //    enemy.TakeDamage(_damage);
-            //}
+            BaseEnemy enemyHealth = other.GetComponent<BaseEnemy>();
+            if (enemyHealth != null)
+            {
+                enemyHealth.TakeDamage(_damage);
+            }
         }
     }
 
-    private void StickToWall(Transform wall)
+    private void StickToWall(Transform wall, Vector2 hitPoint)
     {
         _animator.SetBool("isStuck", true);
         _isStuck = true;
         _speed = 0;
+        CameraManager.instance.ShakeCamera(4f, 0.3f);
 
         // Ngăn chuyển động và vật lý
+        float depth = 0.2f;
+
+        // Hướng bay của kiếm (có thể dùng transform.right hoặc transform.up tùy theo trục mũi kiếm)
+        Vector2 stickDirection = transform.right;
+
+        // Ép vị trí kiếm = Điểm chạm + (Hướng bay * độ sâu)
+        transform.position = hitPoint + (stickDirection * depth);
         Rigidbody2D rb = GetComponent<Rigidbody2D>();
         if (rb != null)
         {
             rb.linearVelocity = Vector2.zero;
-            //rb.isKinematic = true;
+            rb.bodyType = RigidbodyType2D.Kinematic;
         }
-
-        // ⭐ Gắn kiếm làm con của tường để nó di chuyển theo tường (nếu tường di chuyển)
-        transform.SetParent(wall);
     }
 
     private void PickUpSword()
@@ -94,14 +99,11 @@ public class SwordController : MonoBehaviour
     public IEnumerator LifetimeTimer()
     {
         // Chờ 10 giây
-        yield return new WaitForSeconds(20f);
+        yield return new WaitForSeconds(_lifetime);
 
-        // Chỉ hủy nếu kiếm chưa bị ghim/nhặt
-        if (!_isStuck)
-        {
             Destroy(gameObject);
-            Debug.Log("Kiếm đã tự hủy sau 20 giây.");
+            Debug.Log("Kiếm đã tự hủy sau " + _lifetime + " giây.");
             PlayerController.instance.RecoverSword();
-        }
+        
     }
 }
