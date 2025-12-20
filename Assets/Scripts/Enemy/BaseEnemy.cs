@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using TMPro.EditorUtilities;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -13,13 +14,18 @@ public class BaseEnemy : MonoBehaviour
     [SerializeField] protected int _currentLive = 0;
 
     [Header("AI Setting")]
+    // Movement
     [SerializeField] protected float _moveSpeed = 5f;
     [SerializeField] protected float _moveRange = 10f; // From the left to the right
     private bool _canMove = true;
+    // Jump
     [SerializeField] protected float _jumpForce;
     [SerializeField] protected float _groundCheckDistance = 1.2f; // The distance from the pivot to the ground
     [SerializeField] protected float _distanceToPlayer = 2f;
     [SerializeField] protected float _raycastLength = 2f; // The distance from enemy to the wall
+    // Attack
+    [SerializeField] private float _attackCooldown = 2f;
+    private float _attackCounter = 0f;
 
     [Header("Score")]
     [SerializeField] protected int _scoreValue = 20;
@@ -32,35 +38,40 @@ public class BaseEnemy : MonoBehaviour
     protected Animator _animator;
     protected Rigidbody2D _rb;
     protected Vector3 _startPosition;
-    protected bool _isFacingRight;
+    protected bool _isFacingRight = false;
     protected bool _isAttacking = false;
 
 
-    private void Start()
+    private void Awake()
     {
         _animator = this.GetComponent<Animator>();
         _rb = this.GetComponent<Rigidbody2D>();
         _startPosition = this.transform.position;
         _currentHealth = _maxHealth;
         _currentLive = _maxLive;
+        _isFacingRight = false;
         _canMove = true;
+        _attackCounter = _attackCooldown;
         if (_animator != null)
         {
             _animator.SetBool("isDead", false);
         }
     }
 
-    private void Update()
+    public virtual void Update()
     {
         HandleMovement();
         HandleAutoJump();
         UpdateAnimationParameters();
         CheckForPlayer();
+        _attackCounter -= Time.deltaTime;
     }
 
+    #region Movement
     private void HandleMovement()
     {
-        _animator.SetBool("isRunning", true);
+        if (_rb.linearVelocity.x != 0)
+            _animator.SetBool("isRunning", true);
         float currentX = this.transform.position.x;
         float targetVelocityX = _isFacingRight ? _moveSpeed : -_moveSpeed;
 
@@ -84,7 +95,6 @@ public class BaseEnemy : MonoBehaviour
         _isFacingRight = !_isFacingRight;
     }
 
-    #region Jump
     private void HandleJump()
     {
         Debug.Log("Enemy's Jumping");
@@ -144,30 +154,40 @@ public class BaseEnemy : MonoBehaviour
     }
     #endregion
 
+    #region Attack
     private void CheckForPlayer()
     {
         Vector2 castStartPos = this.transform.position;
         Vector2 castDir = _isFacingRight ? Vector2.right : Vector2.left;
 
+        // Attack
         RaycastHit2D _hitPlayer = Physics2D.Raycast(
                                         castStartPos, // Start position of raycast
                                         castDir, // Raycast direction
                                         _distanceToPlayer, // Distance fom enemy to player
                                         _playerLayer); // Layer
 
-        if (_hitPlayer.collider != null && !_isAttacking)
+        if (_hitPlayer.collider != null)
         {
             Debug.Log("Attack Player");
             Attack();
-            _isAttacking = true;
-        }
-        if (_hitPlayer.collider == null)
-        {
-            _isAttacking = false;
         }
 
-        //    // Show raycast
-        //    Color rayColor = _hitPlayer.collider != null ? Color.red : Color.green; // The color turn red when hit the wall
+
+        // Shoot
+        RaycastHit2D _shootPlayer = Physics2D.Raycast(
+                                        castStartPos, // Start position of raycast
+                                        castDir, // Raycast direction
+                                        10f, // Distance fom enemy to player
+                                        _playerLayer); // Layer
+
+        if (_shootPlayer.collider != null && _hitPlayer.collider == null)
+        {
+            Shoot();
+        }
+
+        // Show raycast
+        //Color rayColor = _hitPlayer.collider != null ? Color.red : Color.green; // The color turn red when hit the wall
         //Debug.DrawRay(
         //    castStartPos,
         //    castDir * 1f,
@@ -178,10 +198,20 @@ public class BaseEnemy : MonoBehaviour
 
     private void Attack()
     {
+        if (_attackCounter > 0f) return;
+        // else -> reset counter and attack
         _animator.SetTrigger("Attack");
+        _attackCounter = _attackCooldown;
     }
 
-    public virtual void TakeDamage(float damage)
+    public virtual void Shoot()
+    {
+        // For shooter traps
+    }
+    #endregion
+
+    #region Take Damage and Death
+    public void TakeDamage(float damage)
     {
         _currentHealth -= damage;
         _animator.SetTrigger("Hit");
@@ -202,12 +232,13 @@ public class BaseEnemy : MonoBehaviour
         }
     }
 
-    public void Animation_Kill()
+    public virtual void Animation_Kill()
     {
         Debug.Log("Kill");
         LevelManager.instance.AddPoint(_scoreValue);
         Destroy(this.gameObject);
     }
+    #endregion
 
     private void UpdateAnimationParameters()
     {

@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 3516351434439598106}
   m_Layer: 0
   m_Name: Sword
-  m_TagString: Untagged
+  m_TagString: AttackCollider
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

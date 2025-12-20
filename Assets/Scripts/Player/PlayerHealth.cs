@@ -32,7 +32,7 @@ public class PlayerHealth : MonoBehaviour
         _animator.SetBool("isDead", false);
     }
 
-    public void TakeDamage(float damage, Vector2 hitDirection)
+    public void TakeDamage(float damage)
     {
         if (_currentHealth > 0)
         {

@@ -15,7 +15,7 @@ public class Trap : MonoBehaviour
             Debug.Log("Deal enter damage");
             if (PlayerHealth.instance != null)
             {
-                PlayerHealth.instance.TakeDamage(_enterDamage, _hitDirection);
+                PlayerHealth.instance.TakeDamage(_enterDamage);
             }
         }
     }

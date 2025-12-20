@@ -69,7 +69,7 @@ public class PlayerController : MonoBehaviour
         // Normal attack
         if (Input.GetMouseButtonDown(0) && _canMove && _hasSword)
         {
-            CameraManager.instance.ShakeCamera(2f, 0.3f);
+            CameraManager.instance.ShakeCamera(3f, 0.13f);
             // Trường hợp 1: Bắt đầu Combo 1
             if (_currentComboStage == 0)
             {

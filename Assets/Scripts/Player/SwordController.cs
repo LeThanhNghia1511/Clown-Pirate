@@ -68,7 +68,7 @@ public class SwordController : MonoBehaviour
         _animator.SetBool("isStuck", true);
         _isStuck = true;
         _speed = 0;
-        CameraManager.instance.ShakeCamera(4f, 0.3f);
+        CameraManager.instance.ShakeCamera(5f, 0.2f);
 
         // Ngăn chuyển động và vật lý
         float depth = 0.2f;
