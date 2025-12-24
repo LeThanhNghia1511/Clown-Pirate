@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 788637264527619704}
   - component: {fileID: 8748817112577893866}
   - component: {fileID: 7083306713692358500}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -183,7 +183,7 @@ GameObject:
   - component: {fileID: 5152116591511371766}
   - component: {fileID: 2826975390405641078}
   - component: {fileID: 1347395226514741332}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -352,7 +352,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3958396055885516095}
   - component: {fileID: -868351348825295389}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: DebrisPearl
   m_TagString: Untagged
   m_Icon: {fileID: 0}

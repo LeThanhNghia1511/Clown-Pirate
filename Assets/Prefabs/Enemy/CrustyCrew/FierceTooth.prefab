@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 6855227895370294461}
   - component: {fileID: 4532204652366756456}
   - component: {fileID: 3086993860345719213}
+  - component: {fileID: 6025391840553531988}
   m_Layer: 7
   m_Name: FierceTooth
   m_TagString: Enemy
@@ -30,7 +31,7 @@ Transform:
   m_GameObject: {fileID: 3502712351785912567}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 10.24, y: -1.61, z: 0}
+  m_LocalPosition: {x: -22, y: -1.61, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -220,6 +221,19 @@ MonoBehaviour:
   _playerLayer:
     serializedVersion: 2
     m_Bits: 256
+--- !u!114 &6025391840553531988
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3502712351785912567}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93aad2eb257b66e40ba3b34b32908a20, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _knockbackTime: 0.2
 --- !u!1 &7183540945993179952
 GameObject:
   m_ObjectHideFlags: 0
@@ -231,7 +245,7 @@ GameObject:
   - component: {fileID: 114649007452725065}
   - component: {fileID: 7320608149031069182}
   - component: {fileID: 324537616647970017}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: FierceAttackCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -266,6 +280,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _damage: 15
+  _knockbackForce: 20
 --- !u!61 &324537616647970017
 BoxCollider2D:
   m_ObjectHideFlags: 0

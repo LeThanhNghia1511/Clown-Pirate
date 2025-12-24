@@ -46,9 +46,10 @@ GameObject:
   - component: {fileID: 2320843623315343629}
   - component: {fileID: 7565793536461563254}
   - component: {fileID: 8846227384219256495}
+  - component: {fileID: -3620989854149655650}
   m_Layer: 8
   m_Name: Player
-  m_TagString: AttackCollider
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -68,6 +69,7 @@ Transform:
   m_Children:
   - {fileID: 349535373977137105}
   - {fileID: 1346861073658777378}
+  - {fileID: 7404612958290208190}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &1869810363778662568
@@ -194,14 +196,16 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   _maxJump: 2
-  _knockbackPower: 50
-  _knockbackDuration: 0.2
   _animator: {fileID: 1531762628874568176}
   _controllerWithSword: {fileID: 9100000, guid: fa4fb28943548dc4f924975051ff7ef1, type: 2}
   _controllerNoSword: {fileID: 9100000, guid: 729ecd9628475c64299d00e45c832bc4, type: 2}
   _thrownSwordPrefab: {fileID: 4455669671739127688, guid: 386128d0e01bb9346b96263a578e2110, type: 3}
   _swordSpawnPoint: {fileID: 349535373977137105}
   _swordCollider: {fileID: 5010551957581392324}
+  _jumpPrefab: {fileID: 9218951468483354358, guid: 454ff10c0a36187429f50e88c3843b7a, type: 3}
+  _groundPrefab: {fileID: 8576434602409063987, guid: f6527048768458744816f5f74e0232c4, type: 3}
+  _runPrefab: {fileID: 4867434712179716973, guid: b59a14c2c9467cc42b65fdd231b96a7d, type: 3}
+  _dustPosition: {fileID: 7404612958290208190}
 --- !u!61 &7565793536461563254
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -264,6 +268,21 @@ MonoBehaviour:
   _currentHealth: 0
   _maxLive: 3
   _currentLive: 0
+  _drownDamage: 10
+  _drownFrequency: 1
+--- !u!114 &-3620989854149655650
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3648292403232381771}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93aad2eb257b66e40ba3b34b32908a20, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _knockbackTime: 0.2
 --- !u!1 &5010551957581392324
 GameObject:
   m_ObjectHideFlags: 0
@@ -277,7 +296,7 @@ GameObject:
   - component: {fileID: 1335433121852878075}
   m_Layer: 10
   m_Name: SwordCollider
-  m_TagString: Untagged
+  m_TagString: AttackCollider
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -356,3 +375,36 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _damage: 5
+  _knockbackForce: 16
+  _playerPosition: {fileID: 7191853801347699087}
+--- !u!1 &6351310479453557781
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7404612958290208190}
+  m_Layer: 8
+  m_Name: DustPosition
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7404612958290208190
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6351310479453557781}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7191853801347699087}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

@@ -10,6 +10,8 @@ TagManager:
   - Enemy
   - Shooter
   - AttackCollider
+  - Water
+  - Barrel
   layers:
   - Default
   - TransparentFX
@@ -20,11 +22,11 @@ TagManager:
   - Terrain
   - Enemy
   - Player
-  - Trap
-  - Attack Collider
+  - eAttackCollider
+  - pAttackCollider
   - eProjectile
-  - 
-  - 
+  - Debris
+  - Item
   - 
   - 
   - 

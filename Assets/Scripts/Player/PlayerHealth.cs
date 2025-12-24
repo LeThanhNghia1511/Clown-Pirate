@@ -7,9 +7,15 @@ public class PlayerHealth : MonoBehaviour
     [Header("Live")]
     [SerializeField] private int _maxLive = 2;
     [SerializeField] private int _currentLive = 0;
+    [Header("Drowning")]
+    [SerializeField] private float _drownDamage = 10f;
+    [SerializeField] private float _drownFrequency = 1f;
+    private float _drownCounter = 0f;
     // Animator for some effects
     private Animator _animator;
+    private Knockback _knockback;
 
+    // Singleton
     public static PlayerHealth instance;
     private void Awake()
     {
@@ -26,32 +32,31 @@ public class PlayerHealth : MonoBehaviour
     private void Start()
     {
         _animator = this.GetComponent<Animator>();
+        _knockback = this.GetComponent<Knockback>();
         _currentHealth = _maxHealth;
         _currentLive = _maxLive;
         UIManager.instance.UpdateLiveText(_currentLive);
         _animator.SetBool("isDead", false);
     }
 
-    public void TakeDamage(float damage)
+    private void Update()
+    {
+        _drownCounter += Time.deltaTime;
+    }
+
+    public void TakeDamage(float damage, float knockbackForce, Vector2 damageSourcePos)
     {
         if (_currentHealth > 0)
         {
             _currentHealth -= damage;
+            AudioManager.instance.PlayHitSFX();
             if (_animator != null)
             {
                 _animator.SetTrigger("Hit");
-                //Knockback.instance.DoKnockback();
                 UIManager.instance.UpdateHPBar(_currentHealth, _maxHealth);
             }
-
-            //2.Kích hoạt Knockback
-            PlayerController player = GetComponent<PlayerController>();
-            if (player != null)
-            {
-                //player.ApplyKnockback(hitDirection); // Gọi hàm đẩy lùi trong Controller
-            }
-
-            CameraManager.instance.ShakeCamera(3f, 0.3f);
+            _knockback.GetKnocked(knockbackForce, damageSourcePos);
+            CameraManager.instance.ShakeCamera(0.5f, 0.3f);
         }
         if (_currentHealth <= 0)
         {
@@ -93,5 +98,14 @@ public class PlayerHealth : MonoBehaviour
             _currentHealth = _maxHealth;
         }
         UIManager.instance.UpdateHPBar(_currentHealth, _maxHealth);
+    }
+
+    public void Drown()
+    {
+        if (_drownCounter >= _drownFrequency)
+        {
+            _drownCounter = 0f;
+            TakeDamage(_drownDamage, 5f,transform.position);
+        }
     }
 }

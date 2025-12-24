@@ -40,8 +40,10 @@ public class AudioSettingsManager : MonoBehaviour
         _currentAudioValue = ConvertLinearToDB(audioValue);
         audioMixer.SetFloat("BGMVolume", _currentAudioValue);
         audioMixer.SetFloat("SFXVolume", _currentAudioValue);
-        PlayerPrefs.SetFloat("BGMVolume", audioValue); // Prefs phai dung gia tri tuyen tinh
+        audioMixer.SetFloat("UIVolume", _currentAudioValue);
+        PlayerPrefs.SetFloat("BGMVolume", audioValue);
         PlayerPrefs.SetFloat("SFXVolume", audioValue);
+        PlayerPrefs.SetFloat("UIVolume", audioValue); // Prefs phai dung gia tri tuyen tinh
 
         // Update states
         if (_currentAudioValue <= -80f)

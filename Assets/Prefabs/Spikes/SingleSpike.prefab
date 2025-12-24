@@ -125,6 +125,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _enterDamage: 2
+  _knockbackForce: 20
 --- !u!60 &-2202930064716797129
 PolygonCollider2D:
   m_ObjectHideFlags: 0

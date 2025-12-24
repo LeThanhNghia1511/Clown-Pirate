@@ -44,7 +44,8 @@ GameObject:
   - component: {fileID: 4358311316632247314}
   - component: {fileID: 3733188370985009580}
   - component: {fileID: 2098489408506497358}
-  - component: {fileID: 4111136984958363461}
+  - component: {fileID: 4399057628090662027}
+  - component: {fileID: -3844025304193542577}
   m_Layer: 7
   m_Name: Cannon
   m_TagString: Shooter
@@ -218,7 +219,7 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1.9008751, y: 1.4402449}
   m_EdgeRadius: 0
---- !u!114 &4111136984958363461
+--- !u!114 &4399057628090662027
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -227,25 +228,32 @@ MonoBehaviour:
   m_GameObject: {fileID: 6212269408455204147}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ff13109906accfd4690e50140faf11f1, type: 3}
+  m_Script: {fileID: 11500000, guid: 93aad2eb257b66e40ba3b34b32908a20, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxHealth: 30
+  _knockbackTime: 0.2
+--- !u!114 &-3844025304193542577
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6212269408455204147}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09ebbc11c23438e408d40d8f8bae3109, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _maxHealth: 40
   _currentHealth: 0
   _maxLive: 1
   _currentLive: 0
-  _shootRange: 25
+  _shootRange: 10
   _projectilePrefab: {fileID: 8019552561027484393, guid: 6da2221602b91c243ac36d65ba9cb32b, type: 3}
   _debrisObject: {fileID: 8920353500955182715, guid: 23cf610b0c5b7ae48954ce39235e7e92, type: 3}
   _projectilePosition: {fileID: 4851542374650389542}
   _shootCooldown: 3
   _scoreValue: 20
-  _wallLayer:
-    serializedVersion: 2
-    m_Bits: 0
-  _groundLayer:
-    serializedVersion: 2
-    m_Bits: 0
   _playerLayer:
     serializedVersion: 2
     m_Bits: 256

@@ -25,7 +25,7 @@ public class BaseEnemy : MonoBehaviour
     [SerializeField] protected float _raycastLength = 2f; // The distance from enemy to the wall
     // Attack
     [SerializeField] private float _attackCooldown = 2f;
-    private float _attackCounter = 0f;
+    protected float _attackCounter = 0f;
 
     [Header("Score")]
     [SerializeField] protected int _scoreValue = 20;
@@ -37,6 +37,7 @@ public class BaseEnemy : MonoBehaviour
 
     protected Animator _animator;
     protected Rigidbody2D _rb;
+    protected Knockback _knockback;
     protected Vector3 _startPosition;
     protected bool _isFacingRight = false;
     protected bool _isAttacking = false;
@@ -46,6 +47,7 @@ public class BaseEnemy : MonoBehaviour
     {
         _animator = this.GetComponent<Animator>();
         _rb = this.GetComponent<Rigidbody2D>();
+        _knockback = this.GetComponent<Knockback>();
         _startPosition = this.transform.position;
         _currentHealth = _maxHealth;
         _currentLive = _maxLive;
@@ -60,6 +62,7 @@ public class BaseEnemy : MonoBehaviour
 
     public virtual void Update()
     {
+        if (_knockback.IsBeingKnocked) return;
         HandleMovement();
         HandleAutoJump();
         UpdateAnimationParameters();
@@ -196,7 +199,7 @@ public class BaseEnemy : MonoBehaviour
         //);
     }
 
-    private void Attack()
+    public virtual void Attack()
     {
         if (_attackCounter > 0f) return;
         // else -> reset counter and attack
@@ -211,10 +214,12 @@ public class BaseEnemy : MonoBehaviour
     #endregion
 
     #region Take Damage and Death
-    public void TakeDamage(float damage)
+    public void TakeDamage(float damage, float knockbackForce, Vector2 damageSourcePos)
     {
         _currentHealth -= damage;
         _animator.SetTrigger("Hit");
+        AudioManager.instance.PlayHitSFX();
+        _knockback.GetKnocked(knockbackForce, damageSourcePos);
         if (_currentHealth <= 0)
         {
             HandleDeath();

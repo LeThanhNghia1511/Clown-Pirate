@@ -4,7 +4,7 @@ public class CannonBall : Bullet
 {
     public override void Animation_Explode()
     {
-        Debug.Log("Instantiate debris bullet");
+        AudioManager.instance.PlayCannonExplosionSFX();
         GameObject debris = Instantiate(_debrisBullet, transform.position, Quaternion.identity);
         _moveSpeed = 0f;
     }

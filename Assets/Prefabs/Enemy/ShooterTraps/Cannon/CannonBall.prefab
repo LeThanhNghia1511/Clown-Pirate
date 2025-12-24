@@ -189,6 +189,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _moveSpeed: 30
-  _damage: 1
+  _damage: 20
+  _knockbackForce: 25
   _lifeTime: 10
+  _terrainLayer:
+    serializedVersion: 2
+    m_Bits: 64
   _debrisBullet: {fileID: 166316150304350934, guid: e5baea69fae3aa348b84f925a0aab75f, type: 3}

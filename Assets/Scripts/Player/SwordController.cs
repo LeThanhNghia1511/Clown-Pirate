@@ -5,6 +5,7 @@ public class SwordController : MonoBehaviour
 {
     [SerializeField] private float _speed = 15f;
     [SerializeField] private float _damage = 10f;
+    [SerializeField] private float _knockbackForce = 20f;
     [SerializeField] private float _lifetime = 5f;
     [SerializeField] private LayerMask _wallLayer; // Layer của tường/địa hình
 
@@ -58,7 +59,28 @@ public class SwordController : MonoBehaviour
             BaseEnemy enemyHealth = other.GetComponent<BaseEnemy>();
             if (enemyHealth != null)
             {
-                enemyHealth.TakeDamage(_damage);
+                enemyHealth.TakeDamage(_damage, _knockbackForce, transform.position);
+                CameraManager.instance.ShakeCamera(0.5f, 0.3f);
+            }
+        }
+
+        if (other.CompareTag("Shooter"))
+        {
+            Shooter enemyHealth = other.GetComponent<Shooter>();
+            if (enemyHealth != null)
+            {
+                enemyHealth.TakeDamage(_damage, _knockbackForce, transform.position);
+                CameraManager.instance.ShakeCamera(0.5f, 0.3f);
+            }
+        }
+
+        if (other.CompareTag("Barrel"))
+        {
+            Barrel enemyHealth = other.GetComponent<Barrel>();
+            if (enemyHealth != null)
+            {
+                enemyHealth.TakeDamage(_damage, _knockbackForce, transform.position);
+                CameraManager.instance.ShakeCamera(0.5f, 0.3f);
             }
         }
     }
@@ -66,24 +88,25 @@ public class SwordController : MonoBehaviour
     private void StickToWall(Transform wall, Vector2 hitPoint)
     {
         _animator.SetBool("isStuck", true);
+        AudioManager.instance.PlaySwordImpactSFX();
         _isStuck = true;
         _speed = 0;
-        CameraManager.instance.ShakeCamera(5f, 0.2f);
 
-        // Ngăn chuyển động và vật lý
-        float depth = 0.2f;
-
-        // Hướng bay của kiếm (có thể dùng transform.right hoặc transform.up tùy theo trục mũi kiếm)
-        Vector2 stickDirection = transform.right;
-
-        // Ép vị trí kiếm = Điểm chạm + (Hướng bay * độ sâu)
-        transform.position = hitPoint + (stickDirection * depth);
         Rigidbody2D rb = GetComponent<Rigidbody2D>();
         if (rb != null)
         {
+
+            // Ép vị trí: Điểm chạm trừ đi một chút hướng bay 
+            // (Để mũi kiếm cắm vào chứ không phải cả cây kiếm lún vào)
+            float offsetDepth = -0.1f;
+            transform.position = hitPoint + _direction * offsetDepth;
+
+            // Khóa vật lý
             rb.linearVelocity = Vector2.zero;
             rb.bodyType = RigidbodyType2D.Kinematic;
         }
+
+        CameraManager.instance.ShakeCamera(1f, 0.2f);
     }
 
     private void PickUpSword()

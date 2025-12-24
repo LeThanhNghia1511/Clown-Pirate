@@ -53,6 +53,12 @@ public class SeaShell : Shooter
         if (_attackCounter > 0f) return;
         // else -> reset counter and attack
         _animator.SetTrigger("Attack");
+        AudioManager.instance.PlayBiteSFX();
         _attackCounter = _attackCooldown;
+    }
+
+    public override void AnimationEvent_Shoot()
+    {
+        base.AnimationEvent_Shoot();
     }
 }

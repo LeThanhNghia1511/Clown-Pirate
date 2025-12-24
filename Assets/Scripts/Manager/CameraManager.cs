@@ -5,6 +5,10 @@ using UnityEngine;
 public class CameraManager : MonoBehaviour
 {
     [SerializeField] private CinemachineCamera _cinemachineCamera;
+    [SerializeField] private NoiseSettings _horizontalNoise; // Kéo file Noise Ngang vào đây
+    [SerializeField] private NoiseSettings _verticalNoise;   // Kéo file Noise Dọc vào đây
+
+    private CinemachineBasicMultiChannelPerlin _perlin;
     private float _shakeTimer;
     // Singleton for camera
     public static CameraManager instance { get; private set; }
@@ -20,12 +24,17 @@ public class CameraManager : MonoBehaviour
         }
         _shakeTimer = 0;
         _cinemachineCamera = GetComponent<CinemachineCamera>();
+        _perlin = _cinemachineCamera.GetComponent<CinemachineBasicMultiChannelPerlin>();
     }
 
-    public void ShakeCamera(float intensity, float time)
+    public void ShakeCamera(float intensity, float time, int direction = 0)
     {
-        CinemachineBasicMultiChannelPerlin cinemachineBasicMultiChannelPerlin = _cinemachineCamera.GetComponent<CinemachineBasicMultiChannelPerlin>();
-        cinemachineBasicMultiChannelPerlin.AmplitudeGain = intensity;
+        if (_perlin == null) return;
+
+        if (direction == 0) _perlin.NoiseProfile = _horizontalNoise; // Default = 0
+        else _perlin.NoiseProfile = _verticalNoise;
+
+        _perlin.AmplitudeGain = intensity;
         _shakeTimer = time;
     }
 
@@ -36,9 +45,7 @@ public class CameraManager : MonoBehaviour
             _shakeTimer -= Time.deltaTime;
             if (_shakeTimer <= 0f)
             {
-                // Time over
-                CinemachineBasicMultiChannelPerlin cinemachineBasicMultiChannelPerlin = _cinemachineCamera.GetComponent<CinemachineBasicMultiChannelPerlin>();
-                cinemachineBasicMultiChannelPerlin.AmplitudeGain = 0f;
+                _perlin.AmplitudeGain = 0f;
             }
         }
     }

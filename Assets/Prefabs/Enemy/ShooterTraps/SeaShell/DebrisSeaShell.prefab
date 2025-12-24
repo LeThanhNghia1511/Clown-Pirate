@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4438561452320506244}
   - component: {fileID: -4077750377533600680}
-  m_Layer: 7
+  m_Layer: 12
   m_Name: DebrisSeaShell
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -108,7 +108,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8049831816625044569, guid: 31fb69cfdbc418f4c94b7916e1939ff1, type: 3}
       propertyPath: m_Layer
-      value: 7
+      value: 12
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -134,7 +134,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1304650560666260452, guid: c0da1f855e1e6314e90e93202055a8e5, type: 3}
       propertyPath: m_Layer
-      value: 7
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 5022132869171883872, guid: c0da1f855e1e6314e90e93202055a8e5, type: 3}
       propertyPath: m_LocalPosition.x
@@ -200,7 +200,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2014592859331382103, guid: b7c2217073d94ce4089d39050e9ebb33, type: 3}
       propertyPath: m_Layer
-      value: 7
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 3166428526466636136, guid: b7c2217073d94ce4089d39050e9ebb33, type: 3}
       propertyPath: m_LocalPosition.x
@@ -306,7 +306,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5389982166035477529, guid: 63531c784c95e9c4d8795e7234630280, type: 3}
       propertyPath: m_Layer
-      value: 7
+      value: 12
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

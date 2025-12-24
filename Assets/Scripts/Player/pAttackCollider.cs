@@ -3,6 +3,8 @@ using UnityEngine;
 public class pAttackCollider : MonoBehaviour
 {
     [SerializeField] private float _damage = 10f;
+    [SerializeField] private float _knockbackForce = 20f;
+    [SerializeField] private Transform _playerPosition;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -11,8 +13,7 @@ public class pAttackCollider : MonoBehaviour
             BaseEnemy enemy = collision.GetComponent<BaseEnemy>();
             if (enemy != null)
             {
-                Debug.Log("Hit Enemy");
-                enemy.TakeDamage(_damage);
+                enemy.TakeDamage(_damage, _knockbackForce, transform.position);
             }
         }
         if (collision != null && collision.CompareTag("Shooter"))
@@ -20,8 +21,16 @@ public class pAttackCollider : MonoBehaviour
             Shooter shooter = collision.GetComponent<Shooter>();
             if (shooter != null)
             {
-                Debug.Log("Hit Shooter");
-                shooter.TakeDamage(_damage);
+                shooter.TakeDamage(_damage, _knockbackForce, _playerPosition.position);
+            }
+        }
+
+        if (collision != null && collision.CompareTag("Barrel"))
+        {
+            Barrel shooter = collision.GetComponent<Barrel>();
+            if (shooter != null)
+            {
+                shooter.TakeDamage(_damage, _knockbackForce, _playerPosition.position);
             }
         }
     }

@@ -22,12 +22,11 @@ public class Shooter : MonoBehaviour
     [SerializeField] protected int _scoreValue = 20;
 
     [Header("Layers")]
-    [SerializeField] protected LayerMask _wallLayer;
-    [SerializeField] protected LayerMask _groundLayer;
     [SerializeField] protected LayerMask _playerLayer;
 
     protected Animator _animator;
     protected Rigidbody2D _rb;
+    private Knockback _knockback;
     protected Vector3 _startPosition;
     protected bool _isFacingRight = false;
     protected bool _isAttacking = false;
@@ -37,6 +36,7 @@ public class Shooter : MonoBehaviour
     {
         _animator = this.GetComponent<Animator>();
         _rb = this.GetComponent<Rigidbody2D>();
+        _knockback = this.GetComponent<Knockback>();
         _currentHealth = _maxHealth;
         _currentLive = _maxLive;
         _isFacingRight = false;
@@ -49,6 +49,7 @@ public class Shooter : MonoBehaviour
 
     public virtual void Update()
     {
+        if (_knockback.IsBeingKnocked) return;
         CheckForPlayer();
         _shootCounter -= Time.deltaTime;
     }
@@ -95,9 +96,8 @@ public class Shooter : MonoBehaviour
         _shootCounter = _shootCooldown;
     }
 
-    public void Animation_Shoot()
+    public virtual void AnimationEvent_Shoot()
     {
-        Debug.Log("Shoot Player");
         GameObject bullet = Instantiate(_projectilePrefab, _projectilePosition.position, Quaternion.identity);
         Vector2 shootDir = _isFacingRight ? Vector2.right : Vector2.left;
         bullet.GetComponent<Bullet>().Initialize(shootDir);
@@ -105,10 +105,12 @@ public class Shooter : MonoBehaviour
     #endregion
 
     #region Take Damage and Death
-    public void TakeDamage(float damage)
+    public void TakeDamage(float damage, float knockbackForce, Vector2 damageSourcePos)
     {
         _currentHealth -= damage;
         _animator.SetTrigger("Hit");
+        AudioManager.instance.PlayHitSFX();
+        _knockback.GetKnocked(knockbackForce, damageSourcePos);
         if (_currentHealth <= 0)
         {
             HandleDeath();

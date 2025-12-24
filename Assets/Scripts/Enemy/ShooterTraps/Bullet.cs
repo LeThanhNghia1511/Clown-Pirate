@@ -5,7 +5,9 @@ public class Bullet : MonoBehaviour
 {
     [SerializeField] protected float _moveSpeed = 20f;
     [SerializeField] private float _damage = 10f;
+    [SerializeField] private float _knockbackForce = 10f;
     [SerializeField] private float _lifeTime = 10f;
+    [SerializeField] protected LayerMask _terrainLayer;
 
     [SerializeField] protected GameObject _debrisBullet;
     private Animator _animator;
@@ -38,9 +40,13 @@ public class Bullet : MonoBehaviour
         if (collision != null && collision.gameObject.CompareTag("Player"))
         {
             _animator.SetTrigger("Explode");
-            PlayerHealth.instance.TakeDamage(_damage);
+            PlayerHealth.instance.TakeDamage(_damage, _knockbackForce,transform.position);
         }
         if (collision != null && collision.CompareTag("AttackCollider"))
+        {
+            _animator.SetTrigger("Explode");
+        }
+        if (((1 << collision.gameObject.layer) & _terrainLayer) != 0)
         {
             _animator.SetTrigger("Explode");
         }

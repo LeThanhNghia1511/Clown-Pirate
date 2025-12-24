@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 4173361954808373263}
   - component: {fileID: 5925583907611401148}
   - component: {fileID: 3626048154446312312}
+  - component: {fileID: 2063606768006577133}
   m_Layer: 7
   m_Name: SeaShell
   m_TagString: Shooter
@@ -176,7 +177,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 20
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -210,17 +211,24 @@ MonoBehaviour:
   _projectilePosition: {fileID: 2307409666236576669}
   _shootCooldown: 3
   _scoreValue: 20
-  _wallLayer:
-    serializedVersion: 2
-    m_Bits: 0
-  _groundLayer:
-    serializedVersion: 2
-    m_Bits: 0
   _playerLayer:
     serializedVersion: 2
     m_Bits: 256
   _attackRange: 1
   _attackCooldown: 1.5
+--- !u!114 &2063606768006577133
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 498641653183688676}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93aad2eb257b66e40ba3b34b32908a20, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _knockbackTime: 0.2
 --- !u!1 &8274434197024836350
 GameObject:
   m_ObjectHideFlags: 0
@@ -263,7 +271,7 @@ GameObject:
   - component: {fileID: 4896217365412509242}
   - component: {fileID: 7187057535345731384}
   - component: {fileID: 1494832639364032416}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: SeaShellAttackCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -344,3 +352,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _damage: 10
+  _knockbackForce: 20

@@ -4,18 +4,16 @@ using System.Collections;
 
 public class PlayerController : MonoBehaviour
 {
+    [Header("Movement Parameters")]
     [SerializeField] private Rigidbody2D _rbPlayer;
     [SerializeField] private float _moveSpeed = 5f;
     private float _moveX;
+    private bool _canMove = true; // Chỉ cho phép di chuyển khi TRUE
     [SerializeField] public float jumpForce = 5f;
     [SerializeField] private Vector2 _boxSize = new Vector2(0.8f, 0.1f); // The size of the box
     [SerializeField] private LayerMask _groundLayer;
     [SerializeField] private int _maxJump = 2;
     private int _jumpCount = 0;
-
-    private bool _canMove = true; // Chỉ cho phép di chuyển khi TRUE
-    [SerializeField] private float _knockbackPower = 50f;
-    [SerializeField] private float _knockbackDuration = 0.2f;
 
     // Attack Handle
     private bool _hasSword = true;
@@ -28,11 +26,16 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private RuntimeAnimatorController _controllerNoSword;
 
     [Header("Thrown Sword")]
-    [SerializeField] private GameObject _thrownSwordPrefab; // Kéo Prefab ThrownSword vào đây
+    [SerializeField] private GameObject _thrownSwordPrefab;
     [SerializeField] private Transform _swordSpawnPoint;
-
-
     [SerializeField] private GameObject _swordCollider;
+
+    [Header("Visual Effect")]
+    [SerializeField] private GameObject _jumpPrefab;
+    [SerializeField] private GameObject _groundPrefab;
+    [SerializeField] private GameObject _runPrefab;
+    [SerializeField] private Transform _dustPosition;
+    private Knockback _knockback;
 
     // Singleton for playerController
     public static PlayerController instance { get; private set; }
@@ -46,6 +49,7 @@ public class PlayerController : MonoBehaviour
         {
             instance = this;
         }
+        _knockback = GetComponent<Knockback>();
     }
     private void Update()
     {
@@ -57,9 +61,10 @@ public class PlayerController : MonoBehaviour
         {
             _jumpCount = 0;
         }
+        HandleFall();
+        if (_knockback.IsBeingKnocked) return;
         HandleMove();
         HandleJump();
-        HandleFall();
         HandleAttackInput();
     }
 
@@ -69,7 +74,6 @@ public class PlayerController : MonoBehaviour
         // Normal attack
         if (Input.GetMouseButtonDown(0) && _canMove && _hasSword)
         {
-            CameraManager.instance.ShakeCamera(3f, 0.13f);
             // Trường hợp 1: Bắt đầu Combo 1
             if (_currentComboStage == 0)
             {
@@ -133,6 +137,11 @@ public class PlayerController : MonoBehaviour
             Debug.Log("Combo Reset.");
         }
     }
+
+    public void Animation_PlayAttackSFX()
+    {
+        AudioManager.instance.PlayAttackSFX();
+    }
     // Throw sword
     public void AnimationEvent_ThrowSword()
     {
@@ -155,9 +164,14 @@ public class PlayerController : MonoBehaviour
 
     public void RecoverSword()
     {
+        _currentComboStage = 0;
+        _queuedAttack = false;
+
         _animator.runtimeAnimatorController = _controllerWithSword;
         _hasSword = true;
-        _animator.SetBool("isRunning", false); // Ví dụ: Bật lại trạng thái chạy
+
+        _animator.SetInteger("ComboStage", 0);
+        _animator.SetBool("isRunning", false);
     }
 
     #endregion
@@ -172,6 +186,7 @@ public class PlayerController : MonoBehaviour
         if (_moveX != 0)
         {
             _animator.SetBool("isRunning", true);
+            CreateDust(_runPrefab);
         }
         else
         {
@@ -241,6 +256,7 @@ public class PlayerController : MonoBehaviour
                 // Audio và Anim
                 AudioManager.instance.PlayJumpSFX();
                 _animator.SetBool("isJumping", true);
+                CreateDust(_jumpPrefab);
                 _jumpCount++;
                 Debug.Log(_jumpCount);
             }
@@ -268,41 +284,6 @@ public class PlayerController : MonoBehaviour
         bool output = Physics2D.BoxCast(startPoint, _boxSize, 0f, Vector2.down, 0.2f, _groundLayer);
         return output;
     }
-
-
-    public void ApplyKnockback(Vector2 direction)
-    {
-        // Xác định hướng đẩy lùi ngang: ngược lại với hướng va chạm (direction.x)
-        float horizontalPush = -Mathf.Sign(direction.x) * _knockbackPower;
-
-        // ⭐ GIẢM LỰC ĐẨY LÊN: chỉ bằng 1/10 lực đẩy ngang (hoặc dùng giá trị cố định nhỏ)
-        float verticalPush = _knockbackPower * 0.1f; // Ví dụ: Giảm từ 0.5f xuống 0.1f
-
-        Vector2 knockbackVector = new Vector2(horizontalPush, verticalPush);
-
-        // ⭐ 1. Khóa điều khiển
-        _canMove = false;
-
-        // 2. Thiết lập vận tốc về 0 trước khi đẩy
-        _rbPlayer.linearVelocity = Vector2.zero;
-
-        // 3. Áp dụng lực đẩy (Dùng ForceMode2D.Impulse để áp dụng lực ngay lập tức)
-        _rbPlayer.AddForce(knockbackVector, ForceMode2D.Impulse);
-
-        // Bắt đầu Coroutine để bật lại điều khiển
-        StartCoroutine(KnockbackFreezeRoutine(_knockbackDuration));
-    }
-
-    private IEnumerator KnockbackFreezeRoutine(float duration)
-    {
-        // Chờ hết thời gian đẩy lùi
-        yield return new WaitForSeconds(duration);
-
-        // ⭐ Đảm bảo Player vẫn ở trạng thái giật lùi cho đến khi chạm đất
-        // Dù _canMove = true, lực hấp dẫn sẽ kéo Player xuống
-
-        _canMove = true; // Bật lại di chuyển sau khi hết thời gian đẩy lùi
-    }
     #endregion
 
     public void LockControlsOnDeath()
@@ -315,5 +296,32 @@ public class PlayerController : MonoBehaviour
         enabled = false;
 
         Debug.Log("Player Controls Locked.");
+    }
+
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        if (collision != null &&  collision.gameObject.CompareTag("Water"))
+        {
+            Debug.Log("Got wet");
+            _jumpCount = _maxJump;
+            PlayerHealth.instance.Drown();
+        }
+    }
+
+    public void AnimationEvent_ShakingWhenAttack()
+    {
+        if (_currentComboStage == 1)
+        {
+            CameraManager.instance.ShakeCamera(0.5f, 0.2f); // Horizontal
+        }
+        else CameraManager.instance.ShakeCamera(0.5f, 0.2f, 1); // Vertical
+    }
+
+    private void CreateDust(GameObject dustPrefab)
+    {
+        if (!dustPrefab)
+        {
+            GameObject dust = Instantiate(dustPrefab, _dustPosition.position, Quaternion.identity);
+        }
     }
 }

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3344264959481030307}
   - component: {fileID: 5334015605905475109}
   - component: {fileID: -4372975079557059033}
-  m_Layer: 7
+  m_Layer: 12
   m_Name: Peace2
   m_TagString: Enemy
   m_Icon: {fileID: 0}
