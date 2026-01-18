@@ -1,10 +1,10 @@
 using UnityEngine;
 
-public class HealthPotion : Potion
+public class HealthPotion : Item
 {
-    [SerializeField] private float healAmount = 20f;
+    [SerializeField] private float _healAmount = 20f;
     public override void ApplyEffect() // Heal the player
     {
-        PlayerHealth.instance.Heal(healAmount);
+        BuffManager.instance.Heal(_healAmount);
     }
 }

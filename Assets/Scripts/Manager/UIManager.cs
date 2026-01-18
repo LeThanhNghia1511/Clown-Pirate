@@ -2,10 +2,16 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.Collections;
+using System.Data.Common;
+using Unity.VisualScripting;
 
 public class UIManager : MonoBehaviour
 {
     [SerializeField] private Image _imgHealth;
+    [SerializeField] private Color[] _liveColors;
+    [SerializeField] private Image _imgEnergy;
+    [SerializeField] private Image _imgKey;
     [SerializeField] private TextMeshProUGUI _liveText;
     [SerializeField] private Animator _UIAnimator;
     [SerializeField] private Canvas _canvas;
@@ -15,6 +21,12 @@ public class UIManager : MonoBehaviour
     private TextMeshProUGUI _scoreText;
     private TextMeshProUGUI _winScoreText;
     private TextMeshProUGUI _loseScoreText;
+    private Coroutine _hpCoroutine;
+    private Coroutine _bossHpCoroutine;
+    private Coroutine _energyCoroutine;
+    [Header("Boss UI")]
+    [SerializeField] private GameObject _bossHPBar;
+    [SerializeField] private Image _imgBossHP;
 
     // Singleton
     public static UIManager instance;
@@ -32,16 +44,14 @@ public class UIManager : MonoBehaviour
         _winMenu = FindChildByName(_canvas.transform, "WinMenu");
         _loseMenu = FindChildByName(_canvas.transform, "LoseMenu");
         _pauseMenu = FindChildByName(_canvas.transform, "PauseMenu");
-    }
+        _liveColors = new Color[3] { Color.gray, Color.green, Color.red};
+        _imgKey.gameObject.SetActive(false);
 
-    private void Start()
-    {
         Transform scoreTextTransform = _canvas.transform.Find("ScoreText");
         _scoreText = scoreTextTransform.GetComponent<TextMeshProUGUI>();
-        // ⭐ 2. KIỂM TRA VÀ LẤY SCORE TEXT TỪ CÁC PANEL
         if (_winMenu != null)
         {
-            Transform winScoreTransform = _winMenu.transform.Find("ScoreText");
+            Transform winScoreTransform = _winMenu.transform.Find("Big/ScoreText");
             if (winScoreTransform != null)
             {
                 _winScoreText = winScoreTransform.GetComponent<TextMeshProUGUI>();
@@ -50,39 +60,108 @@ public class UIManager : MonoBehaviour
 
         if (_loseMenu != null)
         {
-            Transform loseScoreTransform = _loseMenu.transform.Find("ScoreText");
+            Transform loseScoreTransform = _loseMenu.transform.Find("Big/ScoreText");
             if (loseScoreTransform != null)
             {
                 _loseScoreText = loseScoreTransform.GetComponent<TextMeshProUGUI>();
             }
         }
-
-        UpdateHPBar(1, 1);
-        //HidePauseMenu();
-        //HideLoseMenu();
-        //HideWinMenu();
     }
 
-    public void PlayGame()
+    private void Start()
     {
-        SceneManager.LoadScene("TestLevel");
+        UpdatePointText(0);
+        // Unactive UI menu
+        _pauseMenu.SetActive(false);
+        _winMenu.SetActive(false);
+        _loseMenu.SetActive(false);
     }
 
+    // Stats
+    public void ActiveKeyUI()
+    {
+        _imgKey.gameObject.SetActive(true);
+    }
+
+    public void UpdateLiveText(int currentLive)
+    {
+        _liveText.text = "x" + currentLive;
+    }
+
+    public void UpdatePointText(int point)
+    {
+        if (_scoreText != null)
+        {
+            _scoreText.text = point.ToString();
+        }
+        else
+        {
+            Debug.LogWarning("Cant find the score text!");
+        }
+
+        if (_winScoreText != null)
+        {
+            _winScoreText.text = "Score: " + point;
+        }
+
+        if (_loseScoreText != null)
+        {
+            _loseScoreText.text = "Score: " + point;
+        }
+    }
+
+    // HP
     public void UpdateHPBar(float currentHealth, float maxHealth)
     {
-        _imgHealth.fillAmount = currentHealth / maxHealth;
+        float targetFill = currentHealth / maxHealth;
+        if (_hpCoroutine != null) StopCoroutine(_hpCoroutine);
+        _hpCoroutine = StartCoroutine(SmoothBarUpdate(_imgHealth, targetFill));
     }
 
-    public void StartMainMenuAnimation()
+    public void UpdateHealthBarColor(int currentLive)
     {
-        _UIAnimator.SetTrigger("MainMenu");
+        if (_imgBossHP == null || _liveColors.Length == 0) return;
+        _imgBossHP.color = _liveColors[currentLive - 1];
     }
 
-    public void StartLevelMenuAnimation()
+    // Energy
+    public void UpdateEnergyBar(float currentEnergy, float maxEnergy)
     {
-        _UIAnimator.SetTrigger("LevelMenu");
+        float targetFill = currentEnergy / maxEnergy;
+        if (_energyCoroutine != null) StopCoroutine(_energyCoroutine);
+        _energyCoroutine = StartCoroutine(SmoothBarUpdate(_imgEnergy, targetFill));
     }
 
+    IEnumerator SmoothBarUpdate(Image image, float target)
+    {
+        while (Mathf.Abs(image.fillAmount - target) > 0.001f)
+        {
+            image.fillAmount = Mathf.Lerp(image.fillAmount, target, 5f * Time.deltaTime);
+            yield return null;
+        }
+        image.fillAmount = target;
+    }
+
+    // Boss UI
+    public void ActivateBossUI(float maxHealth)
+    {
+        if (_bossHPBar != null)
+        {
+            _bossHPBar.SetActive(true);
+        }
+    }
+
+    public void UpdateBossHP(float currentHealth, float maxHealth)
+    {
+        if (_imgBossHP != null)
+        {
+            float targetFill = currentHealth / maxHealth;
+            if (_bossHpCoroutine != null) StopCoroutine(_bossHpCoroutine);
+            _bossHpCoroutine = StartCoroutine(SmoothBarUpdate(_imgBossHP, targetFill));
+        }
+    }
+
+    // Menu UI
     public void ShowPauseMenu()
     {
         _pauseMenu.SetActive(true);
@@ -93,11 +172,6 @@ public class UIManager : MonoBehaviour
     public void HidePauseMenu()
     {
         _pauseMenu.SetActive(false);
-    }
-
-    public void UpdateLiveText(int currentLive)
-    {
-        _liveText.text = "x" + currentLive;
     }
 
     public void ShowWinMenu()
@@ -129,16 +203,7 @@ public class UIManager : MonoBehaviour
         SceneManager.LoadScene("MainMenu");
     }
 
-    public void UpdatePointText(int point)
-    {
-        if (_scoreText == null) return;
-        if (_winScoreText == null) return;
-        if (_loseScoreText == null) return;
-        _scoreText.text = "Score: " + point;
-        _winScoreText.text = "Score: " + point;
-        _loseScoreText.text = "Score: " + point;
-    }
-
+    // Helper
     private GameObject FindChildByName(Transform parent, string name)
     {
         Transform childTransform = parent.Find(name);

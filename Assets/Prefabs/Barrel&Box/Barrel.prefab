@@ -169,7 +169,10 @@ MonoBehaviour:
   _maxHealth: 25
   _currentHealth: 0
   _debris: {fileID: 7906023135212804771, guid: 4ada50850c2399946a1e066615615887, type: 3}
-  _itemPrefab: {fileID: 4417813714895437122, guid: 6246e995b37d1a142a28a6cc73a074fc, type: 3}
+  _numberOfItems: 1
+  _itemPrefabs:
+  - {fileID: 7962515171221879410, guid: ac998b66ce2fe6d4d855ab93c1369881, type: 3}
+  _dropRate: 0.7
 --- !u!61 &5156390415772602230
 BoxCollider2D:
   m_ObjectHideFlags: 0

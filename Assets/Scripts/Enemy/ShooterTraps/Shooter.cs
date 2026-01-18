@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Shooter : MonoBehaviour
@@ -19,7 +20,7 @@ public class Shooter : MonoBehaviour
     private float _shootCounter;
 
     [Header("Score")]
-    [SerializeField] protected int _scoreValue = 20;
+    [SerializeField] protected int _pointValue = 20;
 
     [Header("Layers")]
     [SerializeField] protected LayerMask _playerLayer;
@@ -30,6 +31,7 @@ public class Shooter : MonoBehaviour
     protected Vector3 _startPosition;
     protected bool _isFacingRight = false;
     protected bool _isAttacking = false;
+    protected bool _isDead = false;
 
 
     private void Awake()
@@ -39,11 +41,13 @@ public class Shooter : MonoBehaviour
         _knockback = this.GetComponent<Knockback>();
         _currentHealth = _maxHealth;
         _currentLive = _maxLive;
-        _isFacingRight = false;
+        _isFacingRight = _rb.transform.localScale.x < 0 ? true : false;
+        _isDead = false;
         _shootCounter = _shootCooldown;
         if (_animator != null)
         {
-            _animator.SetBool("isDead", false);
+
+            _animator.SetBool(AnimationStrings.isDead, _isDead);
         }
     }
 
@@ -87,12 +91,10 @@ public class Shooter : MonoBehaviour
         //);
     }
 
-    
-
     protected void Shoot()
     {
         if (_shootCounter > 0) return;
-        _animator.SetTrigger("Shoot");
+        _animator.SetTrigger(AnimationStrings.shoot);
         _shootCounter = _shootCooldown;
     }
 
@@ -107,9 +109,10 @@ public class Shooter : MonoBehaviour
     #region Take Damage and Death
     public void TakeDamage(float damage, float knockbackForce, Vector2 damageSourcePos)
     {
+        if (_isDead) return;
         _currentHealth -= damage;
-        _animator.SetTrigger("Hit");
-        AudioManager.instance.PlayHitSFX();
+        _animator.SetTrigger(AnimationStrings.hit);
+        PlayHitSFX();
         _knockback.GetKnocked(knockbackForce, damageSourcePos);
         if (_currentHealth <= 0)
         {
@@ -117,22 +120,36 @@ public class Shooter : MonoBehaviour
         }
     }
 
+    public virtual void PlayHitSFX()
+    {
+        AudioManager.instance.PlaySFX("hit");
+    }
+
     private void HandleDeath()
     {
         _currentLive--;
         if (_currentLive <= 0)
         {
-            _animator.SetTrigger("DeadHit");
-            _animator.SetBool("isDead", true);
+            _isDead = true;
+            _animator.SetBool(AnimationStrings.isDead, true);
+            _animator.SetTrigger(AnimationStrings.hit);
         }
     }
 
     public void Animation_Kill()
     {
-        Debug.Log("Kill");
-        LevelManager.instance.AddPoint(_scoreValue);
+        if (LevelManager.instance != null)
+            LevelManager.instance.AddPoint(_pointValue);
+        if (BossLevelManager.instance != null)
+            BossLevelManager.instance.AddPoint(_pointValue);
+        PlayDeathSFX();
         GameObject debris = Instantiate(_debrisObject, transform.position, Quaternion.identity);
         Destroy(this.gameObject);
+    }
+
+    public virtual void PlayDeathSFX()
+    {
+        AudioManager.instance.PlaySFX("barrelBreak");
     }
     #endregion
 }

@@ -1,18 +1,21 @@
 using UnityEngine;
 
-public class Diamond : MonoBehaviour
+public class Diamond : Item
 {
+    //[SerializeField] private GameObject _effect;
     [SerializeField] private int _pointValue = 1;
-    [SerializeField] private GameObject _diamondEffect;
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    public override void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision != null && collision.CompareTag("Player"))
+        if (collision != null && collision.gameObject.CompareTag("Player"))
         {
-            LevelManager.instance.AddPoint(_pointValue);
-            AudioManager.instance.PlayCoinSFX();
+            AudioManager.instance.PlaySFX("coin");
+            if (LevelManager.instance != null)
+                LevelManager.instance.AddPoint(_pointValue);
+            if (BossLevelManager.instance != null)
+                BossLevelManager.instance.AddPoint(_pointValue);
             Destroy(gameObject);
-            GameObject effect = Instantiate(_diamondEffect, this.transform.position, Quaternion.identity);
+            GameObject effect = Instantiate(_effect, this.transform.position, Quaternion.identity);
         }
     }
 }

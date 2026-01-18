@@ -1,9 +1,7 @@
 public class FierceTooth : BaseEnemy
 {
-    public override void Attack()
+    public override void PlayAttackSFX()
     {
-        if (_attackCounter > 0f) return;
-        base.Attack();
-        AudioManager.instance.PlayBiteSFX();
+        AudioManager.instance.PlaySFX("fierceAttack");
     }
 }

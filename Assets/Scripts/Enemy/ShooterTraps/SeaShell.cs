@@ -52,13 +52,29 @@ public class SeaShell : Shooter
     {
         if (_attackCounter > 0f) return;
         // else -> reset counter and attack
-        _animator.SetTrigger("Attack");
-        AudioManager.instance.PlayBiteSFX();
+        _animator.SetTrigger(AnimationStrings.attack);
+        AudioManager.instance.PlaySFX("seaShellAttack");
         _attackCounter = _attackCooldown;
     }
 
     public override void AnimationEvent_Shoot()
     {
         base.AnimationEvent_Shoot();
+        AudioManager.instance.PlaySFX("shoot");
+    }
+
+    public void AnimationEvent_Close()
+    {
+        AudioManager.instance.PlaySFX("seaShellClose");
+    }
+
+    //public override void PlayHitSFX()
+    //{
+    //    AudioManager.instance.PlayAttackSFX("seaShellHit");
+    //}
+
+    public override void PlayDeathSFX()
+    {
+        AudioManager.instance.PlaySFX("seaShellBreak");
     }
 }

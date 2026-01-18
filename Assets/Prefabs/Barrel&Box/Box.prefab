@@ -215,4 +215,7 @@ MonoBehaviour:
   _maxHealth: 20
   _currentHealth: 0
   _debris: {fileID: 586089005023345430, guid: 2d880164fc4d5ca469c2e9642d66eac5, type: 3}
-  _itemPrefab: {fileID: 7962515171221879410, guid: ac998b66ce2fe6d4d855ab93c1369881, type: 3}
+  _numberOfItems: 1
+  _itemPrefabs:
+  - {fileID: 4417813714895437122, guid: 6246e995b37d1a142a28a6cc73a074fc, type: 3}
+  _dropRate: 0.5

@@ -1,12 +1,7 @@
-﻿using System.Diagnostics;
-using UnityEngine;
-
-public class Crabby : BaseEnemy
+﻿public class Crabby : BaseEnemy
 {
-    public override void Attack()
+    public override void PlayAttackSFX()
     {
-        if (_attackCounter > 0f) return;
-        base.Attack();
-        AudioManager.instance.PlayClampSFX();
+        AudioManager.instance.PlaySFX("clamp");
     }
 }

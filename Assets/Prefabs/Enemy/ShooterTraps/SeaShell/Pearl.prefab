@@ -29,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 4900138647032466161}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 11.91, y: 3.52, z: 0}
+  m_LocalPosition: {x: 14.54, y: 3.52, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -139,8 +139,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _moveSpeed: 25
-  _damage: 10
+  _damage: 7
+  _knockbackForce: 10
   _lifeTime: 10
+  _terrainLayer:
+    serializedVersion: 2
+    m_Bits: 0
   _debrisBullet: {fileID: 8556007838823696230, guid: 22f5eec90c757dc49a986c74b842a3b7, type: 3}
 --- !u!95 &6744834575044631219
 Animator:

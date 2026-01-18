@@ -5,12 +5,14 @@ public class SwordController : MonoBehaviour
 {
     [SerializeField] private float _speed = 15f;
     [SerializeField] private float _damage = 10f;
+    [SerializeField] public float energyCost = 10f;
     [SerializeField] private float _knockbackForce = 20f;
     [SerializeField] private float _lifetime = 5f;
     [SerializeField] private LayerMask _wallLayer; // Layer của tường/địa hình
 
     private Vector2 _direction;
     private bool _isStuck = false;
+    private bool _isDealStickDamaged = false;
     private Animator _animator;
 
     public void Initialize(Vector2 direction)
@@ -23,7 +25,9 @@ public class SwordController : MonoBehaviour
 
     private void Start()
     {
-        StartCoroutine(LifetimeTimer());
+        StartCoroutine(LifetimeTimer(_lifetime));
+        _isStuck = false;
+        _isDealStickDamaged = false;
     }
 
     private void Update()
@@ -36,20 +40,16 @@ public class SwordController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log("Signal");
-        // Va chạm với Tường (Ghim Kiếm)
         if (((1 << other.gameObject.layer) & _wallLayer) != 0)
         {
-            Debug.Log("Signal Wall");
+            if (transform.parent != null) return;
             Vector2 hitPoint = other.ClosestPoint(transform.position);
             StickToWall(other.transform, hitPoint);
+            gameObject.transform.SetParent(other.transform);
         }
 
-        // Va chạm với Player (Nhặt Kiếm)
         if (other.CompareTag("Player") && _isStuck)
         {
-            Debug.Log("Signal Player");
-            // Chỉ nhặt khi kiếm đã ghim vào tường
             PickUpSword();
         }
 
@@ -76,32 +76,32 @@ public class SwordController : MonoBehaviour
 
         if (other.CompareTag("Barrel"))
         {
+            if (transform.parent != null && _isDealStickDamaged == true) return;
             Barrel enemyHealth = other.GetComponent<Barrel>();
             if (enemyHealth != null)
             {
                 enemyHealth.TakeDamage(_damage, _knockbackForce, transform.position);
                 CameraManager.instance.ShakeCamera(0.5f, 0.3f);
+                _isDealStickDamaged = false;
             }
         }
     }
 
     private void StickToWall(Transform wall, Vector2 hitPoint)
     {
-        _animator.SetBool("isStuck", true);
-        AudioManager.instance.PlaySwordImpactSFX();
+        _animator.SetBool(AnimationStrings.isStuck, true);
+        AudioManager.instance.PlaySFX("swordImpact");
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        DialogueEvent.Trigger(player, "Interrogation");
         _isStuck = true;
         _speed = 0;
 
         Rigidbody2D rb = GetComponent<Rigidbody2D>();
         if (rb != null)
         {
-
-            // Ép vị trí: Điểm chạm trừ đi một chút hướng bay 
-            // (Để mũi kiếm cắm vào chứ không phải cả cây kiếm lún vào)
             float offsetDepth = -0.1f;
             transform.position = hitPoint + _direction * offsetDepth;
 
-            // Khóa vật lý
             rb.linearVelocity = Vector2.zero;
             rb.bodyType = RigidbodyType2D.Kinematic;
         }
@@ -119,14 +119,35 @@ public class SwordController : MonoBehaviour
         Destroy(gameObject);
     }
 
-    public IEnumerator LifetimeTimer()
+    public void DropSword()
+    {
+        Rigidbody2D rb = GetComponent<Rigidbody2D>();
+        rb.bodyType = RigidbodyType2D.Dynamic;
+        rb.gravityScale = 2f;
+        float randomX = Random.Range(-2f, 2f);
+        rb.AddForce(new Vector2(randomX, 2f), ForceMode2D.Impulse);
+        _animator.SetBool(AnimationStrings.isStuck, false);
+        StartCoroutine(FloatingRoutine());
+        StartCoroutine(LifetimeTimer(2f));
+    }
+
+    public IEnumerator FloatingRoutine()
+    {
+        yield return new WaitForSeconds(1f);
+        Vector3 startPos = transform.position + Vector3.up * 0.3f;
+        while (true)
+        {
+            float newY = startPos.y + Mathf.Sin(Time.time * 2f) * 0.1f;
+            transform.position = new Vector3(startPos.x, newY, transform.position.z);
+            yield return null;
+        }
+    }
+
+    public IEnumerator LifetimeTimer(float lifetime = 15f)
     {
         // Chờ 10 giây
-        yield return new WaitForSeconds(_lifetime);
-
-            Destroy(gameObject);
-            Debug.Log("Kiếm đã tự hủy sau " + _lifetime + " giây.");
-            PlayerController.instance.RecoverSword();
-        
+        yield return new WaitForSeconds(lifetime);
+        Destroy(gameObject);
+        PlayerController.instance.RecoverSword();
     }
 }

@@ -214,7 +214,7 @@ MonoBehaviour:
   _playerLayer:
     serializedVersion: 2
     m_Bits: 256
-  _attackRange: 1
+  _attackRange: 2
   _attackCooldown: 1.5
 --- !u!114 &2063606768006577133
 MonoBehaviour:

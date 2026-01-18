@@ -36,6 +36,7 @@ public class AudioSettingsManager : MonoBehaviour
 
     public void SetAudioVolume()
     {
+        if (_audioSlider == null) return;
         float audioValue = _audioSlider.value;
         _currentAudioValue = ConvertLinearToDB(audioValue);
         audioMixer.SetFloat("BGMVolume", _currentAudioValue);
@@ -102,7 +103,8 @@ public class AudioSettingsManager : MonoBehaviour
     private void LoadSlider()
     {
         float linearValue = PlayerPrefs.GetFloat("BGMVolume", 0.7f); // or SFXVolume, whatever
-        _audioSlider.value = linearValue;
+        if (_audioSlider != null)
+            _audioSlider.value = linearValue;
         SetAudioVolume();
     }
 

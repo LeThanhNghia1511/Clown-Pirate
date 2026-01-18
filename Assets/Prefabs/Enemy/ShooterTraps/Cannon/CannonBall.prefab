@@ -189,7 +189,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _moveSpeed: 30
-  _damage: 20
+  _damage: 15
   _knockbackForce: 25
   _lifeTime: 10
   _terrainLayer:

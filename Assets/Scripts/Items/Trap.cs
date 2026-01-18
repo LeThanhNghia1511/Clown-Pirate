@@ -15,5 +15,13 @@ public class Trap : MonoBehaviour
                 PlayerHealth.instance.TakeDamage(_enterDamage, _knockbackForce, transform.position);
             }
         }
+        if (collision.gameObject.CompareTag("Barrel"))
+        {
+            Barrel barrel = collision.gameObject.GetComponent<Barrel>();
+            if (barrel != null)
+            {
+                barrel.TakeDamage(_enterDamage, _knockbackForce, transform.position);
+            }
+        }
     }
 }

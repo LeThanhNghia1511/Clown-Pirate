@@ -61,16 +61,16 @@ public class GameManager : MonoBehaviour
     public void WinGame()
     {
         Time.timeScale = 0f;
-        AudioManager.instance.StopGameBGM();
-        AudioManager.instance.PlayGameWinMusic();
+        AudioManager.instance.StopAllMusic();
+        AudioManager.instance.PlaySFX("winGame", false);
         UIManager.instance.ShowWinMenu();
     }
 
     public void LoseGame()
     {
         Time.timeScale = 0f;
-        AudioManager.instance.StopGameBGM();
-        AudioManager.instance.PlayGameOverMusic();
+        AudioManager.instance.StopAllMusic();
+        AudioManager.instance.PlaySFX("gameOver", false);
         UIManager.instance.ShowLoseMenu();
     }
 

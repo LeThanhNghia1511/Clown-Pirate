@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class HighJumpPotion : Potion
+public class HighJumpPotion : Item
 {
     [SerializeField] private float _jumpBoostAmount = 500f;
     [SerializeField] private float _effectTime = 5f;

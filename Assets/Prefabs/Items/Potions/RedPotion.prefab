@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 8134849215487243539}
   - component: {fileID: 5311153956404319286}
   - component: {fileID: 1608815397643550114}
+  - component: {fileID: -4290987033810839166}
   - component: {fileID: 6311721304038584014}
   m_Layer: 13
   m_Name: RedPotion
@@ -78,7 +79,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1463045573
-  m_SortingLayer: 3
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: ae8ecedf89d981545a24191f750e3222, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -125,9 +126,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74f250d2daa7ab14bbec7f92b6fb1a82, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _potionEffect: {fileID: 5473014494684799815, guid: f619686386850cf4b9602d77c292b52c, type: 3}
+  _effect: {fileID: 5473014494684799815, guid: f619686386850cf4b9602d77c292b52c, type: 3}
+  _isDropable: 1
   _stopAfterTime: 0.3
-  healAmount: 20
+  _healAmount: 20
 --- !u!61 &1608815397643550114
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -141,10 +143,56 @@ BoxCollider2D:
   m_Material: {fileID: 6200000, guid: 956e9bf9bf6cee24ba58e7ef155152cb, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 256
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 16119
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: -0.0020008087, y: -0.08603501}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 0.8125, y: 1.0625}
+    newSize: {x: 0.8125, y: 1.0625}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 0.5924101, y: 0.89043}
+  m_EdgeRadius: 0
+--- !u!61 &-4290987033810839166
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4417813714895437122}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 64
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 256
   m_LayerOverridePriority: 0
   m_ForceSendLayers:
     serializedVersion: 2
@@ -162,7 +210,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.0020008087, y: -0.08603501}
+  m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -172,7 +220,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.5924101, y: 0.89043}
+  m_Size: {x: 0.8125, y: 1.0625}
   m_EdgeRadius: 0
 --- !u!50 &6311721304038584014
 Rigidbody2D:
@@ -200,4 +248,4 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
