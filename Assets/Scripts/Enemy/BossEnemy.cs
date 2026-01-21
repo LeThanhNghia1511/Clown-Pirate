@@ -93,9 +93,11 @@ public class BossEnemy : BaseEnemy
             1 => 3,
             _ => 1,
         };
-        int skill = Random.Range(1, phrase);
+        int skill = Random.Range(0, phrase);
         switch (skill)
         {
+            case 0: StartCoroutine(JumpSlamRoutine());
+                break;
             case 1: StartCoroutine(ShootRoutine());
                 break;
             case 2: StartCoroutine(SummonMinion());

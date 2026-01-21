@@ -301,7 +301,7 @@ MonoBehaviour:
   _chaseSpeed: 6
   _moveRange: 5
   _detectionRange: 20
-  _jumpForce: 20
+  _jumpForce: 4
   _wallCheckDistance: 0.8
   _wallLayer:
     serializedVersion: 2
