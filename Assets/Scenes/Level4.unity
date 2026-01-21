@@ -32727,7 +32727,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: Level1
+          m_StringArgument: Level5
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &373113940
@@ -47827,8 +47827,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _bgmSource: {fileID: 1211835473}
   _bgSfxSource: {fileID: 297204202}
-  _sfxSource: {fileID: 515339628}
+  _sfxGroup: {fileID: 0}
   _uiSource: {fileID: 1657487825}
+  _sfxPoolSize: 5
   _minPitch: 0.8
   _maxPitch: 1.2
 --- !u!1 &1898916961
