@@ -8273,10 +8273,10 @@ RectTransform:
   - {fileID: 1406080411}
   m_Father: {fileID: 727843448}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 756, y: 385}
-  m_SizeDelta: {x: 192.8677, y: 88.3}
+  m_AnchorMin: {x: 1, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -204, y: -136.7}
+  m_SizeDelta: {x: 192.86768, y: 88.29999}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &846489500
 MonoBehaviour:
@@ -30567,8 +30567,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _bgmSource: {fileID: 1446971383}
   _bgSfxSource: {fileID: 730865875}
-  _sfxSource: {fileID: 1806143459}
+  _sfxGroup: {fileID: 0}
   _uiSource: {fileID: 1041588334}
+  _sfxPoolSize: 5
   _minPitch: 0.8
   _maxPitch: 1.2
 --- !u!1 &1131769454
@@ -33089,9 +33090,9 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 846489499}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 144, y: 0}
+  m_AnchorMin: {x: 1, y: 0.5}
+  m_AnchorMax: {x: 1, y: 0.5}
+  m_AnchoredPosition: {x: 48, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1406080412

@@ -86,14 +86,21 @@ public class BossEnemy : BaseEnemy
 
     void UseRandomSkill()
     {
-        int skill = Random.Range(1, 3);
+        int phrase = _currentLive switch
+        {
+            3 => 1,
+            2 => 2,
+            1 => 3,
+            _ => 1,
+        };
+        int skill = Random.Range(1, phrase);
         switch (skill)
         {
-            case 1: StartCoroutine(SummonMinion());
+            case 1: StartCoroutine(ShootRoutine());
                 break;
-            case 2: StartCoroutine(JumpSlamRoutine());
+            case 2: StartCoroutine(SummonMinion());
                 break;
-            default: StartCoroutine(ShootRoutine());
+            default: StartCoroutine(JumpSlamRoutine());
                 break;
         }
     }
